@@ -57,6 +57,7 @@ const translations = {
     contactSuccess: "Mensagem enviada com sucesso!",
     contactSuccessSub: "Agradeço o contato. Retornarei em breve.",
     footerText: "Todos os direitos reservados.",
+    companyInfo: "Eduardo Montovanelli Dalmaso - ME | CNPJ: 52.340.739/0001-46 | Emitimos Nota Fiscal",
     // Project specific translations
     proj1Title: "Reconhecimento Automático de Placas (ALPR)",
     proj1Desc: "Desenvolvimento e treinamento de modelos de detecção de objetos (YOLO) para leitura e identificação de placas de veículos em tempo real com alta precisão e performance otimizada.",
@@ -105,6 +106,7 @@ const translations = {
     contactSuccess: "Message sent successfully!",
     contactSuccessSub: "Thank you for reaching out. I will get back to you shortly.",
     footerText: "All rights reserved.",
+    companyInfo: "Eduardo Montovanelli Dalmaso - ME | CNPJ: 52.340.739/0001-46 | Invoices issued",
     // Project specific translations
     proj1Title: "Automatic License Plate Recognition (ALPR)",
     proj1Desc: "Development and training of object detection models (YOLO) for real-time vehicle plate reading and identification with high accuracy and optimized performance.",
@@ -583,6 +585,7 @@ function App() {
       <footer className="footer">
         <div className="container">
           <p>© {new Date().getFullYear()} Eduardo M. Dalmaso. {t.footerText}</p>
+          <p style={{ fontSize: '0.8rem', marginTop: '8px', opacity: 0.8 }}>{t.companyInfo}</p>
         </div>
       </footer>
     </>
