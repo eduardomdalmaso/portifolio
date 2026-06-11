@@ -150,35 +150,40 @@ function App() {
       desc: t.proj1Desc,
       tags: ["Python", "YOLO", "OpenCV", "Golang", "PyTorch"],
       icon: <Terminal className="w-6 h-6 text-cyan-400" />,
-      link: "https://github.com/eduardomdalmaso/ALPR_model"
+      link: "https://github.com/eduardomdalmaso/ALPR_model",
+      repo: "eduardomdalmaso/ALPR_model"
     },
     {
       title: t.proj2Title,
       desc: t.proj2Desc,
       tags: ["Golang", "PHP", "RTSP", "WebRTC", "Docker"],
       icon: <Video className="w-6 h-6 text-indigo-400" />,
-      link: "https://github.com/eduardomdalmaso/fast_api-podman"
+      link: "https://github.com/eduardomdalmaso/fast_api-podman",
+      repo: "eduardomdalmaso/fast_api-podman"
     },
     {
       title: t.proj3Title,
       desc: t.proj3Desc,
       tags: ["Python", "TensorFlow", "YOLOv8", "Deep Learning"],
       icon: <Eye className="w-6 h-6 text-purple-400" />,
-      link: "https://github.com/eduardomdalmaso/face_D"
+      link: "https://github.com/eduardomdalmaso/face_D",
+      repo: "eduardomdalmaso/face_D"
     },
     {
       title: t.proj4Title,
       desc: t.proj4Desc,
       tags: ["Golang", "PHP", "Python", "REST APIs", "Redis"],
       icon: <Layers className="w-6 h-6 text-emerald-400" />,
-      link: "https://github.com/eduardomdalmaso/emendas_DA"
+      link: "https://github.com/eduardomdalmaso/emendas_DA",
+      repo: "eduardomdalmaso/emendas_DA"
     },
     {
       title: t.proj5Title,
       desc: t.proj5Desc,
       tags: ["PHP", "Golang", "SQL", "S3 Storage", "Sistemas Distribuídos"],
       icon: <Settings className="w-6 h-6 text-amber-400" />,
-      link: "https://github.com/eduardomdalmaso/cartpole-ppo"
+      link: "https://github.com/eduardomdalmaso/cartpole-ppo",
+      repo: "eduardomdalmaso/cartpole-ppo"
     }
   ]
 
@@ -432,7 +437,21 @@ function App() {
                   <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}>
                     {project.icon}
                   </div>
-                  <h3 className="project-title">{project.title}</h3>
+                  <h3 className="project-title" style={{ marginBottom: '4px' }}>{project.title}</h3>
+                  {project.repo && (
+                    <div style={{ 
+                      fontSize: '0.825rem', 
+                      fontFamily: 'monospace', 
+                      color: 'var(--secondary)', 
+                      marginBottom: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      opacity: 0.9
+                    }}>
+                      <span>📁</span> {project.repo}
+                    </div>
+                  )}
                   <p className="project-desc">{project.desc}</p>
                   <div className="project-tags">
                     {project.tags.map((tag, tIdx) => (
