@@ -19,10 +19,112 @@ import {
 import profileImg from './assets/profile.png'
 import './App.css'
 
+const translations = {
+  pt: {
+    navHome: "Home",
+    navAbout: "Sobre",
+    navSkills: "Skills",
+    navProjects: "Projetos",
+    navContact: "Contato",
+    heroSubtitle: "Engenheiro & Desenvolvedor Fullstack",
+    heroTitle: "Soluções inteligentes de software e Visão Computacional",
+    heroDesc: "Especializado em otimização de sistemas, integrações robustas de APIs, análise de dados e treinamento de modelos de inteligência artificial aplicados à detecção visual.",
+    heroCTA: "Contratar Serviços",
+    heroViewProjects: "Ver Projetos",
+    aboutTitle: "Sobre Mim",
+    aboutPara1: "Sou Engenheiro Eletricista com forte base analítica, tendo me especializado em análise de dados e, posteriormente, consolidado minha carreira como desenvolvedor Fullstack.",
+    aboutPara2: "Atuo no desenvolvimento de soluções escaláveis de backend e frontend usando PHP, Python e Golang. Possuo profunda experiência prática na aplicação de inteligência artificial voltada à visão computacional, incluindo configuração de redes de câmeras, otimização de latência de streaming e customização/treinamento de modelos de detecção (como YOLO) para identificação facial e leitura automática de placas (ALPR).",
+    aboutPara3: "Minha formação em engenharia me proporciona uma visão focada em resolução de problemas lógicos complexos, performance e arquitetura limpa de código.",
+    statEng: "Engenharia Elétrica",
+    statVision: "Visão Computacional",
+    statFullstack: "Desenvolvedor Fullstack",
+    statOptimization: "Otimização de Sistemas",
+    skillsTitle: "Habilidades & Tecnologias",
+    skillsLang: "Linguagens",
+    skillsAI: "AI & Visão Computacional",
+    skillsSpec: "Especialidades",
+    projectsTitle: "Casos de Uso & Soluções",
+    contactTitle: "Entre em Contato",
+    contactDesc: "Precisa automatizar processos, integrar APIs robustas ou criar soluções sob medida com inteligência artificial e visão computacional? Vamos conversar sobre o seu projeto.",
+    contactFormName: "Nome",
+    contactFormNamePl: "Seu nome completo",
+    contactFormEmail: "E-mail",
+    contactFormEmailPl: "seu.email@dominio.com",
+    contactFormMsg: "Mensagem",
+    contactFormMsgPl: "Detalhes do seu projeto ou proposta...",
+    contactFormSubmit: "Enviar Mensagem",
+    contactSuccess: "Mensagem enviada com sucesso!",
+    contactSuccessSub: "Agradeço o contato. Retornarei em breve.",
+    footerText: "Todos os direitos reservados.",
+    // Project specific translations
+    proj1Title: "Reconhecimento Automático de Placas (ALPR)",
+    proj1Desc: "Desenvolvimento e treinamento de modelos de detecção de objetos (YOLO) para leitura e identificação de placas de veículos em tempo real com alta precisão e performance otimizada.",
+    proj2Title: "Streaming de Câmeras IP & Monitoramento",
+    proj2Desc: "Sistema robusto de gerenciamento, cadastro e transmissão em tempo real de feeds de vídeo multi-câmera com baixa latência, integrando fluxos de imagem com inteligência artificial.",
+    proj3Title: "Modelos de Visão Computacional Customizados",
+    proj3Desc: "Pipeline completo para coleta de datasets, treinamento e deploy de redes neurais para detecção de rostos, classificação de comportamentos e análise de imagem.",
+    proj4Title: "Integração & Otimização de APIs de Alta Performance",
+    proj4Desc: "Construção de microsserviços integrados de alta eficiência, focando em processamento paralelo de dados analíticos e redução no tempo de resposta das requisições.",
+    proj5Title: "Processamento e Upload Otimizado de Arquivos",
+    proj5Desc: "Serviço escalável para recepção, validação, compressão e upload seguro de arquivos e mídia em lote, integrado a sistemas de armazenamento e pipelines analíticos."
+  },
+  en: {
+    navHome: "Home",
+    navAbout: "About",
+    navSkills: "Skills",
+    navProjects: "Projects",
+    navContact: "Contact",
+    heroSubtitle: "Engineer & Fullstack Developer",
+    heroTitle: "Intelligent software solutions and Computer Vision",
+    heroDesc: "Specialized in systems optimization, robust API integrations, data analysis, and training artificial intelligence models applied to visual detection.",
+    heroCTA: "Hire Services",
+    heroViewProjects: "View Projects",
+    aboutTitle: "About Me",
+    aboutPara1: "I am an Electrical Engineer with a strong analytical background, having specialized in data analysis and subsequently consolidated my career as a Fullstack developer.",
+    aboutPara2: "I develop scalable backend and frontend solutions using PHP, Python, and Golang. I have deep practical experience in applying artificial intelligence to computer vision, including camera network configuration, streaming latency optimization, and customization/training of detection models (such as YOLO) for facial identification and Automatic License Plate Recognition (ALPR).",
+    aboutPara3: "My engineering background provides me with a focus on resolving complex logical problems, performance, and clean code architecture.",
+    statEng: "Electrical Engineering",
+    statVision: "Computer Vision",
+    statFullstack: "Fullstack Developer",
+    statOptimization: "Systems Optimization",
+    skillsTitle: "Skills & Technologies",
+    skillsLang: "Languages",
+    skillsAI: "AI & Computer Vision",
+    skillsSpec: "Specialties",
+    projectsTitle: "Use Cases & Solutions",
+    contactTitle: "Get in Touch",
+    contactDesc: "Need to automate processes, integrate robust APIs, or build custom solutions with artificial intelligence and computer vision? Let's talk about your project.",
+    contactFormName: "Name",
+    contactFormNamePl: "Your full name",
+    contactFormEmail: "Email",
+    contactFormEmailPl: "your.email@domain.com",
+    contactFormMsg: "Message",
+    contactFormMsgPl: "Details of your project or proposal...",
+    contactFormSubmit: "Send Message",
+    contactSuccess: "Message sent successfully!",
+    contactSuccessSub: "Thank you for reaching out. I will get back to you shortly.",
+    footerText: "All rights reserved.",
+    // Project specific translations
+    proj1Title: "Automatic License Plate Recognition (ALPR)",
+    proj1Desc: "Development and training of object detection models (YOLO) for real-time vehicle plate reading and identification with high accuracy and optimized performance.",
+    proj2Title: "IP Camera Streaming & Monitoring",
+    proj2Desc: "Robust system for real-time management, registration, and transmission of multi-camera video feeds with low latency, integrating video streams with artificial intelligence.",
+    proj3Title: "Custom Computer Vision Models",
+    proj3Desc: "Complete pipeline for dataset collection, training, and deployment of neural networks for face detection, behavior classification, and image analysis.",
+    proj4Title: "High-Performance API Integration & Optimization",
+    proj4Desc: "Building highly efficient integrated microservices, focusing on parallel processing of analytical data and reducing response times.",
+    proj5Title: "Optimized File Processing & Upload",
+    proj5Desc: "Scalable service for batch receiving, validation, compression, and secure upload of files and media, integrated with storage systems and analytical pipelines."
+  }
+}
+
 function App() {
+  const [lang, setLang] = useState<'pt' | 'en'>('pt')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
+
+  const t = translations[lang]
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -41,32 +143,32 @@ function App() {
 
   const projects = [
     {
-      title: "Reconhecimento Automático de Placas (ALPR)",
-      desc: "Desenvolvimento e treinamento de modelos de detecção de objetos (YOLO) para leitura e identificação de placas de veículos em tempo real com alta precisão e performance otimizada.",
+      title: t.proj1Title,
+      desc: t.proj1Desc,
       tags: ["Python", "YOLO", "OpenCV", "Golang", "PyTorch"],
       icon: <Terminal className="w-6 h-6 text-cyan-400" />
     },
     {
-      title: "Streaming de Câmeras IP & Monitoramento",
-      desc: "Sistema robusto de gerenciamento, cadastro e transmissão em tempo real de feeds de vídeo multi-câmera com baixa latência, integrando fluxos de imagem com inteligência artificial.",
+      title: t.proj2Title,
+      desc: t.proj2Desc,
       tags: ["Golang", "PHP", "RTSP", "WebRTC", "Docker"],
       icon: <Video className="w-6 h-6 text-indigo-400" />
     },
     {
-      title: "Modelos de Visão Computacional Customizados",
-      desc: "Pipeline completo para coleta de datasets, treinamento e deploy de redes neurais para detecção de rostos, classificação de comportamentos e análise de imagem.",
+      title: t.proj3Title,
+      desc: t.proj3Desc,
       tags: ["Python", "TensorFlow", "YOLOv8", "Deep Learning"],
       icon: <Eye className="w-6 h-6 text-purple-400" />
     },
     {
-      title: "Integração & Otimização de APIs de Alta Performance",
-      desc: "Construção de microsserviços integrados de alta eficiência, focando em processamento paralelo de dados analíticos e redução no tempo de resposta das requisições.",
+      title: t.proj4Title,
+      desc: t.proj4Desc,
       tags: ["Golang", "PHP", "Python", "REST APIs", "Redis"],
       icon: <Layers className="w-6 h-6 text-emerald-400" />
     },
     {
-      title: "Processamento e Upload Otimizado de Arquivos",
-      desc: "Serviço escalável para recepção, validação, compressão e upload seguro de arquivos e mídia em lote, integrado a sistemas de armazenamento e pipelines analíticos.",
+      title: t.proj5Title,
+      desc: t.proj5Desc,
       tags: ["PHP", "Golang", "SQL", "S3 Storage", "Sistemas Distribuídos"],
       icon: <Settings className="w-6 h-6 text-amber-400" />
     }
@@ -101,21 +203,82 @@ function App() {
             <span>&lt;</span>Eduardo M. Dalmaso<span>/&gt;</span>
           </a>
           
-          <ul className="nav-menu">
-            <li><a href="#home" className="nav-link">Home</a></li>
-            <li><a href="#about" className="nav-link">Sobre</a></li>
-            <li><a href="#skills" className="nav-link">Skills</a></li>
-            <li><a href="#projects" className="nav-link">Projetos</a></li>
-            <li><a href="#contact" className="nav-link">Contato</a></li>
+          <ul className="nav-menu" style={{ alignItems: 'center' }}>
+            <li><a href="#home" className="nav-link">{t.navHome}</a></li>
+            <li><a href="#about" className="nav-link">{t.navAbout}</a></li>
+            <li><a href="#skills" className="nav-link">{t.navSkills}</a></li>
+            <li><a href="#projects" className="nav-link">{t.navProjects}</a></li>
+            <li><a href="#contact" className="nav-link">{t.navContact}</a></li>
+            
+            {/* Language Switcher */}
+            <li style={{ display: 'flex', gap: '8px', marginLeft: '16px' }}>
+              <button 
+                onClick={() => setLang('pt')} 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: lang === 'pt' ? 'var(--secondary)' : 'var(--text-muted)',
+                  fontWeight: lang === 'pt' ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                PT
+              </button>
+              <span style={{ color: 'var(--border)' }}>|</span>
+              <button 
+                onClick={() => setLang('en')} 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: lang === 'en' ? 'var(--secondary)' : 'var(--text-muted)',
+                  fontWeight: lang === 'en' ? 'bold' : 'normal',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                EN
+              </button>
+            </li>
           </ul>
 
-          <button 
-            className="mobile-menu-btn" 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle Menu"
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            {/* Mobile Language buttons */}
+            <div className="mobile-only-lang" style={{ display: 'none', gap: '8px' }}>
+              <button 
+                onClick={() => setLang('pt')} 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: lang === 'pt' ? 'var(--secondary)' : 'var(--text-muted)',
+                  fontWeight: lang === 'pt' ? 'bold' : 'normal',
+                  cursor: 'pointer'
+                }}
+              >
+                PT
+              </button>
+              <button 
+                onClick={() => setLang('en')} 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: lang === 'en' ? 'var(--secondary)' : 'var(--text-muted)',
+                  fontWeight: lang === 'en' ? 'bold' : 'normal',
+                  cursor: 'pointer'
+                }}
+              >
+                EN
+              </button>
+            </div>
+
+            <button 
+              className="mobile-menu-btn" 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle Menu"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation Menu */}
@@ -131,11 +294,11 @@ function App() {
             padding: '20px',
             zIndex: 99
           }}>
-            <a href="#home" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Home</a>
-            <a href="#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Sobre</a>
-            <a href="#skills" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Skills</a>
-            <a href="#projects" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Projetos</a>
-            <a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Contato</a>
+            <a href="#home" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navHome}</a>
+            <a href="#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navAbout}</a>
+            <a href="#skills" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navSkills}</a>
+            <a href="#projects" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navProjects}</a>
+            <a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navContact}</a>
           </div>
         )}
       </header>
@@ -144,17 +307,15 @@ function App() {
       <section id="home" className="hero-section">
         <div className="container grid-2 hero-grid">
           <div>
-            <div className="hero-subtitle">Engenheiro & Desenvolvedor Fullstack</div>
-            <h1>Soluções inteligentes de software e Visão Computacional</h1>
-            <p className="hero-desc">
-              Especializado em otimização de sistemas, integrações robustas de APIs, análise de dados e treinamento de modelos de inteligência artificial aplicados à detecção visual.
-            </p>
+            <div className="hero-subtitle">{t.heroSubtitle}</div>
+            <h1>{t.heroTitle}</h1>
+            <p className="hero-desc">{t.heroDesc}</p>
             <div className="hero-actions">
-              <a href="#contact" className="btn-primary">
-                Contratar Serviços <ArrowRight size={18} />
+              <a href="https://wa.me/5527999395171" target="_blank" rel="noopener noreferrer" className="btn-primary">
+                {t.heroCTA} <ArrowRight size={18} />
               </a>
               <a href="#projects" className="btn-secondary">
-                Ver Projetos
+                {t.heroViewProjects}
               </a>
             </div>
           </div>
@@ -170,16 +331,10 @@ function App() {
       <section id="about">
         <div className="container grid-2 about-grid">
           <div>
-            <h2>Sobre Mim</h2>
-            <p style={{ marginBottom: '1.5rem', fontSize: '1.05rem' }}>
-              Sou Engenheiro Eletricista com forte base analítica, tendo me especializado em análise de dados e, posteriormente, consolidado minha carreira como desenvolvedor Fullstack. 
-            </p>
-            <p style={{ marginBottom: '1.5rem' }}>
-              Atuo no desenvolvimento de soluções escaláveis de backend e frontend usando PHP, Python e Golang. Possuo profunda experiência prática na aplicação de inteligência artificial voltada à visão computacional, incluindo configuração de redes de câmeras, otimização de latência de streaming e customização/treinamento de modelos de detecção (como YOLO) para identificação facial e leitura automática de placas (ALPR).
-            </p>
-            <p>
-              Minha formação em engenharia me proporciona uma visão focada em resolução de problemas lógicos complexos, performance e arquitetura limpa de código.
-            </p>
+            <h2>{t.aboutTitle}</h2>
+            <p style={{ marginBottom: '1.5rem', fontSize: '1.05rem' }}>{t.aboutPara1}</p>
+            <p style={{ marginBottom: '1.5rem' }}>{t.aboutPara2}</p>
+            <p>{t.aboutPara3}</p>
           </div>
           <div>
             <div className="about-stats">
@@ -187,25 +342,25 @@ function App() {
                 <div className="stat-number">
                   <Cpu size={32} style={{ marginBottom: '8px', color: 'var(--secondary)' }} />
                 </div>
-                <div className="stat-label">Engenharia Elétrica</div>
+                <div className="stat-label">{t.statEng}</div>
               </div>
               <div className="glass-panel stat-card">
                 <div className="stat-number">
                   <Sparkles size={32} style={{ marginBottom: '8px', color: 'var(--primary)' }} />
                 </div>
-                <div className="stat-label">Visão Computacional</div>
+                <div className="stat-label">{t.statVision}</div>
               </div>
               <div className="glass-panel stat-card">
                 <div className="stat-number">
                   <Code2 size={32} style={{ marginBottom: '8px', color: 'var(--accent)' }} />
                 </div>
-                <div className="stat-label">Desenvolvedor Fullstack</div>
+                <div className="stat-label">{t.statFullstack}</div>
               </div>
               <div className="glass-panel stat-card">
                 <div className="stat-number">
                   <Flame size={32} style={{ marginBottom: '8px', color: '#f97316' }} />
                 </div>
-                <div className="stat-label">Otimização de Sistemas</div>
+                <div className="stat-label">{t.statOptimization}</div>
               </div>
             </div>
           </div>
@@ -215,13 +370,13 @@ function App() {
       {/* Skills Section */}
       <section id="skills">
         <div className="container">
-          <h2>Habilidades & Tecnologias</h2>
+          <h2>{t.skillsTitle}</h2>
           
           <div className="grid-3" style={{ marginTop: '2rem' }}>
             <div className="glass-panel skill-category-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
                 <Code2 className="text-indigo-400" size={24} />
-                <h3>Linguagens</h3>
+                <h3>{t.skillsLang}</h3>
               </div>
               <div className="skill-list">
                 {skills.filter(s => s.category === "Linguagens").map((skill, index) => (
@@ -233,7 +388,7 @@ function App() {
             <div className="glass-panel skill-category-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
                 <Sparkles className="text-cyan-400" size={24} />
-                <h3>AI & Visão Computacional</h3>
+                <h3>{t.skillsAI}</h3>
               </div>
               <div className="skill-list">
                 {skills.filter(s => s.category === "AI & Visão").map((skill, index) => (
@@ -245,7 +400,7 @@ function App() {
             <div className="glass-panel skill-category-card">
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
                 <Database className="text-purple-400" size={24} />
-                <h3>Especialidades</h3>
+                <h3>{t.skillsSpec}</h3>
               </div>
               <div className="skill-list">
                 {skills.filter(s => s.category === "Especialidades").map((skill, index) => (
@@ -260,7 +415,7 @@ function App() {
       {/* Projects Section */}
       <section id="projects">
         <div className="container">
-          <h2>Casos de Uso & Soluções</h2>
+          <h2>{t.projectsTitle}</h2>
           
           <div className="grid-3" style={{ marginTop: '2rem' }}>
             {projects.map((project, index) => (
@@ -287,12 +442,22 @@ function App() {
       <section id="contact">
         <div className="container grid-2 contact-grid">
           <div>
-            <h2>Entre em Contato</h2>
-            <p style={{ marginBottom: '2.5rem', fontSize: '1.05rem' }}>
-              Precisa automatizar processos, integrar APIs robustas ou criar soluções sob medida com inteligência artificial e visão computacional? Vamos conversar sobre o seu projeto.
-            </p>
+            <h2>{t.contactTitle}</h2>
+            <p style={{ marginBottom: '2.5rem', fontSize: '1.05rem' }}>{t.contactDesc}</p>
             
             <div className="contact-info-list">
+              <a href="https://wa.me/5527999395171" target="_blank" rel="noopener noreferrer" className="contact-item">
+                <div className="contact-icon-wrapper">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                  </svg>
+                </div>
+                <div className="contact-item-text">
+                  <h4>WhatsApp / Phone</h4>
+                  <p>+55 27 999395171</p>
+                </div>
+              </a>
+
               <a href="mailto:eduardomdalmaso@gmail.com" className="contact-item">
                 <div className="contact-icon-wrapper">
                   <Mail size={20} />
@@ -342,13 +507,13 @@ function App() {
                   gap: '12px'
                 }}>
                   <CheckCircle2 size={48} className="text-emerald-400" />
-                  <h3>Mensagem enviada com sucesso!</h3>
-                  <p>Agradeço o contato. Retornarei em breve.</p>
+                  <h3>{t.contactSuccess}</h3>
+                  <p>{t.contactSuccessSub}</p>
                 </div>
               ) : (
                 <>
                   <div className="form-group">
-                    <label htmlFor="name">Nome</label>
+                    <label htmlFor="name">{t.contactFormName}</label>
                     <input 
                       type="text" 
                       id="name" 
@@ -356,12 +521,12 @@ function App() {
                       value={formData.name} 
                       onChange={handleInputChange} 
                       className="form-input" 
-                      placeholder="Seu nome completo" 
+                      placeholder={t.contactFormNamePl} 
                       required 
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="email">E-mail</label>
+                    <label htmlFor="email">{t.contactFormEmail}</label>
                     <input 
                       type="email" 
                       id="email" 
@@ -369,12 +534,12 @@ function App() {
                       value={formData.email} 
                       onChange={handleInputChange} 
                       className="form-input" 
-                      placeholder="seu.email@dominio.com" 
+                      placeholder={t.contactFormEmailPl} 
                       required 
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="message">Mensagem</label>
+                    <label htmlFor="message">{t.contactFormMsg}</label>
                     <textarea 
                       id="message" 
                       name="message" 
@@ -382,12 +547,12 @@ function App() {
                       value={formData.message} 
                       onChange={handleInputChange} 
                       className="form-textarea" 
-                      placeholder="Detalhes do seu projeto ou proposta..." 
+                      placeholder={t.contactFormMsgPl} 
                       required
                     ></textarea>
                   </div>
                   <button type="submit" className="btn-primary" style={{ marginTop: '8px', justifyContent: 'center' }}>
-                    Enviar Mensagem <ArrowRight size={18} />
+                    {t.contactFormSubmit} <ArrowRight size={18} />
                   </button>
                 </>
               )}
@@ -399,7 +564,7 @@ function App() {
       {/* Footer */}
       <footer className="footer">
         <div className="container">
-          <p>© {new Date().getFullYear()} Eduardo M. Dalmaso. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Eduardo M. Dalmaso. {t.footerText}</p>
         </div>
       </footer>
     </>
