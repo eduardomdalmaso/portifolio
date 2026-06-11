@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { 
   Mail, 
   Cpu, 
@@ -15,14 +15,17 @@ import {
   Sparkles,
   Eye,
   CheckCircle2,
-  ExternalLink
+  ExternalLink,
+  Home,
+  User,
+  Activity
 } from 'lucide-react'
 import profileImg from './assets/profile.png'
 import './App.css'
 
 const translations = {
   pt: {
-    navHome: "Home",
+    navHome: "Início",
     navAbout: "Sobre",
     navSkills: "Skills",
     navProjects: "Projetos",
@@ -121,8 +124,96 @@ const translations = {
   }
 }
 
+// Interactive background grid reveal component
+function DetectionReveal() {
+  const gridRef = useRef<HTMLDivElement>(null)
+  
+  // Create 180 cells for the screen reveal
+  const cellCount = 200
+
+  const handleCellMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget
+    el.style.backgroundColor = 'transparent'
+    el.style.transition = 'none'
+  }
+
+  const handleCellMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget
+    // Start fading back slowly
+    setTimeout(() => {
+      el.style.backgroundColor = 'var(--bg-dark)'
+      el.style.transition = 'background-color 2s ease-out'
+    }, 200)
+  }
+
+  return (
+    <div className="detection-bg-container">
+      {/* Hidden YOLO Camera Graphic Underneath */}
+      <div className="detection-feed-graphic">
+        <div className="scan-line"></div>
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          fontFamily: 'monospace',
+          fontSize: '0.8rem',
+          color: '#ef4444',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <span style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: '#ef4444',
+            display: 'inline-block',
+            animation: 'pulse 1s infinite'
+          }}></span>
+          <span>LIVE DETECT | CORE_YOLOv10_RECV_04</span>
+        </div>
+
+        <div className="mock-detection-overlay">
+          {/* Bounding Box: Car */}
+          <div className="bbox car" style={{ top: '15%', left: '20%', width: '180px', height: '120px' }}>
+            <span className="bbox-label">[Car: 94%]</span>
+          </div>
+
+          {/* Bounding Box: Person */}
+          <div className="bbox person" style={{ top: '45%', left: '15%', width: '80px', height: '160px' }}>
+            <span className="bbox-label">[Person: 98%]</span>
+          </div>
+
+          {/* Bounding Box: Threat/Assalto */}
+          <div className="bbox robbery" style={{ top: '35%', left: '60%', width: '150px', height: '170px' }}>
+            <span className="bbox-label" style={{ backgroundColor: '#f97316' }}>[Threat: 99% - INCIDENT]</span>
+          </div>
+
+          {/* Bounding Box: License Plate */}
+          <div className="bbox car" style={{ top: '65%', left: '40%', width: '140px', height: '80px' }}>
+            <span className="bbox-label">[Plate: 91% - EMD2026]</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Grid cells overlaying the graphics */}
+      <div className="reveal-grid" ref={gridRef}>
+        {Array.from({ length: cellCount }).map((_, i) => (
+          <div
+            key={i}
+            className="reveal-cell"
+            onMouseEnter={handleCellMouseEnter}
+            onMouseLeave={handleCellMouseLeave}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const [lang, setLang] = useState<'pt' | 'en'>('pt')
+  const [activePage, setActivePage] = useState<'home' | 'about' | 'skills' | 'projects' | 'contact'>('home')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
@@ -136,7 +227,6 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Simulated form submission
     setFormSubmitted(true)
     setTimeout(() => {
       setFormSubmitted(false)
@@ -208,93 +298,94 @@ function App() {
   ]
 
   return (
-    <>
-      {/* Navigation Header */}
-      <header className="header">
-        <div className="container header-container">
-          <a href="#home" className="logo">
-            <span>&lt;</span>Eduardo M. Dalmaso<span>/&gt;</span>
-          </a>
-          
-          <ul className="nav-menu" style={{ alignItems: 'center' }}>
-            <li><a href="#home" className="nav-link">{t.navHome}</a></li>
-            <li><a href="#about" className="nav-link">{t.navAbout}</a></li>
-            <li><a href="#skills" className="nav-link">{t.navSkills}</a></li>
-            <li><a href="#projects" className="nav-link">{t.navProjects}</a></li>
-            <li><a href="#contact" className="nav-link">{t.navContact}</a></li>
-            
-            {/* Language Switcher */}
-            <li style={{ display: 'flex', gap: '8px', marginLeft: '16px' }}>
+    <div className="app-container">
+      {/* Dynamic reveal overlay under the site */}
+      <DetectionReveal />
+
+      {/* Sidebar Navigation */}
+      <aside className="sidebar">
+        <a href="#home" className="sidebar-logo" onClick={() => setActivePage('home')}>
+          <span>&lt;</span>Eduardo M. Dalmaso<span>/&gt;</span>
+        </a>
+
+        <nav style={{ flexGrow: 1 }}>
+          <ul className="sidebar-nav">
+            <li>
               <button 
-                onClick={() => setLang('pt')} 
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: lang === 'pt' ? 'var(--secondary)' : 'var(--text-muted)',
-                  fontWeight: lang === 'pt' ? 'bold' : 'normal',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
-                }}
+                className={`sidebar-link-btn ${activePage === 'home' ? 'active' : ''}`}
+                onClick={() => setActivePage('home')}
               >
-                PT
+                <Home size={18} /> {t.navHome}
               </button>
-              <span style={{ color: 'var(--border)' }}>|</span>
+            </li>
+            <li>
               <button 
-                onClick={() => setLang('en')} 
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: lang === 'en' ? 'var(--secondary)' : 'var(--text-muted)',
-                  fontWeight: lang === 'en' ? 'bold' : 'normal',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
-                }}
+                className={`sidebar-link-btn ${activePage === 'about' ? 'active' : ''}`}
+                onClick={() => setActivePage('about')}
               >
-                EN
+                <User size={18} /> {t.navAbout}
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`sidebar-link-btn ${activePage === 'skills' ? 'active' : ''}`}
+                onClick={() => setActivePage('skills')}
+              >
+                <Cpu size={18} /> {t.navSkills}
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`sidebar-link-btn ${activePage === 'projects' ? 'active' : ''}`}
+                onClick={() => setActivePage('projects')}
+              >
+                <Activity size={18} /> {t.navProjects}
+              </button>
+            </li>
+            <li>
+              <button 
+                className={`sidebar-link-btn ${activePage === 'contact' ? 'active' : ''}`}
+                onClick={() => setActivePage('contact')}
+              >
+                <Mail size={18} /> {t.navContact}
               </button>
             </li>
           </ul>
+        </nav>
 
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            {/* Mobile Language buttons */}
-            <div className="mobile-only-lang" style={{ display: 'none', gap: '8px' }}>
-              <button 
-                onClick={() => setLang('pt')} 
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: lang === 'pt' ? 'var(--secondary)' : 'var(--text-muted)',
-                  fontWeight: lang === 'pt' ? 'bold' : 'normal',
-                  cursor: 'pointer'
-                }}
-              >
-                PT
-              </button>
-              <button 
-                onClick={() => setLang('en')} 
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: lang === 'en' ? 'var(--secondary)' : 'var(--text-muted)',
-                  fontWeight: lang === 'en' ? 'bold' : 'normal',
-                  cursor: 'pointer'
-                }}
-              >
-                EN
-              </button>
-            </div>
-
+        {/* Sidebar Footer containing CNPJ & Language Switch */}
+        <div className="sidebar-footer">
+          <div className="sidebar-lang-switch">
             <button 
-              className="mobile-menu-btn" 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle Menu"
+              className={`lang-btn ${lang === 'pt' ? 'active' : ''}`}
+              onClick={() => setLang('pt')}
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              PT
+            </button>
+            <button 
+              className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
+              onClick={() => setLang('en')}
+            >
+              EN
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
+        {/* Mobile Navbar Hamburger & Language Selector */}
+        <div className="mobile-only-lang" style={{ display: 'none' }}>
+          <button className={`lang-btn ${lang === 'pt' ? 'active' : ''}`} onClick={() => setLang('pt')}>PT</button>
+          <button className={`lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>EN</button>
+        </div>
+
+        <button 
+          className="mobile-menu-btn" 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle Menu"
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="mobile-menu glass-panel" style={{
             position: 'absolute',
@@ -307,307 +398,311 @@ function App() {
             padding: '20px',
             zIndex: 99
           }}>
-            <a href="#home" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navHome}</a>
-            <a href="#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navAbout}</a>
-            <a href="#skills" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navSkills}</a>
-            <a href="#projects" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navProjects}</a>
-            <a href="#contact" className="nav-link" onClick={() => setMobileMenuOpen(false)}>{t.navContact}</a>
+            <button className={`sidebar-link-btn ${activePage === 'home' ? 'active' : ''}`} onClick={() => { setActivePage('home'); setMobileMenuOpen(false); }}>{t.navHome}</button>
+            <button className={`sidebar-link-btn ${activePage === 'about' ? 'active' : ''}`} onClick={() => { setActivePage('about'); setMobileMenuOpen(false); }}>{t.navAbout}</button>
+            <button className={`sidebar-link-btn ${activePage === 'skills' ? 'active' : ''}`} onClick={() => { setActivePage('skills'); setMobileMenuOpen(false); }}>{t.navSkills}</button>
+            <button className={`sidebar-link-btn ${activePage === 'projects' ? 'active' : ''}`} onClick={() => { setActivePage('projects'); setMobileMenuOpen(false); }}>{t.navProjects}</button>
+            <button className={`sidebar-link-btn ${activePage === 'contact' ? 'active' : ''}`} onClick={() => { setActivePage('contact'); setMobileMenuOpen(false); }}>{t.navContact}</button>
           </div>
         )}
-      </header>
+      </aside>
 
-      {/* Hero Section */}
-      <section id="home" className="hero-section">
-        <div className="container grid-2 hero-grid">
-          <div>
-            <div className="hero-subtitle">{t.heroSubtitle}</div>
-            <h1>{t.heroTitle}</h1>
-            <p className="hero-desc">{t.heroDesc}</p>
-            <div className="hero-actions">
-              <a href="https://wa.me/5527999395171" target="_blank" rel="noopener noreferrer" className="btn-primary">
-                {t.heroCTA} <ArrowRight size={18} />
-              </a>
-              <a href="#projects" className="btn-secondary">
-                {t.heroViewProjects}
-              </a>
-            </div>
-          </div>
-          <div className="hero-image-wrapper">
-            <div className="hero-image-border">
-              <img src={profileImg} alt="Eduardo M. Dalmaso" className="hero-img" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about">
-        <div className="container grid-2 about-grid">
-          <div>
-            <h2>{t.aboutTitle}</h2>
-            <p style={{ marginBottom: '1.5rem', fontSize: '1.05rem' }}>{t.aboutPara1}</p>
-            <p style={{ marginBottom: '1.5rem' }}>{t.aboutPara2}</p>
-            <p>{t.aboutPara3}</p>
-          </div>
-          <div>
-            <div className="about-stats">
-              <div className="glass-panel stat-card">
-                <div className="stat-number">
-                  <Cpu size={32} style={{ marginBottom: '8px', color: 'var(--secondary)' }} />
-                </div>
-                <div className="stat-label">{t.statEng}</div>
-              </div>
-              <div className="glass-panel stat-card">
-                <div className="stat-number">
-                  <Sparkles size={32} style={{ marginBottom: '8px', color: 'var(--primary)' }} />
-                </div>
-                <div className="stat-label">{t.statVision}</div>
-              </div>
-              <div className="glass-panel stat-card">
-                <div className="stat-number">
-                  <Code2 size={32} style={{ marginBottom: '8px', color: 'var(--accent)' }} />
-                </div>
-                <div className="stat-label">{t.statFullstack}</div>
-              </div>
-              <div className="glass-panel stat-card">
-                <div className="stat-number">
-                  <Flame size={32} style={{ marginBottom: '8px', color: '#f97316' }} />
-                </div>
-                <div className="stat-label">{t.statOptimization}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section id="skills">
-        <div className="container">
-          <h2>{t.skillsTitle}</h2>
-          
-          <div className="grid-3" style={{ marginTop: '2rem' }}>
-            <div className="glass-panel skill-category-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <Code2 className="text-indigo-400" size={24} />
-                <h3>{t.skillsLang}</h3>
-              </div>
-              <div className="skill-list">
-                {skills.filter(s => s.category === "Linguagens").map((skill, index) => (
-                  <span key={index} className="skill-tag">{skill.name}</span>
-                ))}
-              </div>
-            </div>
-
-            <div className="glass-panel skill-category-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <Sparkles className="text-cyan-400" size={24} />
-                <h3>{t.skillsAI}</h3>
-              </div>
-              <div className="skill-list">
-                {skills.filter(s => s.category === "AI & Visão").map((skill, index) => (
-                  <span key={index} className="skill-tag">{skill.name}</span>
-                ))}
-              </div>
-            </div>
-
-            <div className="glass-panel skill-category-card">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <Database className="text-purple-400" size={24} />
-                <h3>{t.skillsSpec}</h3>
-              </div>
-              <div className="skill-list">
-                {skills.filter(s => s.category === "Especialidades").map((skill, index) => (
-                  <span key={index} className="skill-tag">{skill.name}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects">
-        <div className="container">
-          <h2>{t.projectsTitle}</h2>
-          
-          <div className="grid-3" style={{ marginTop: '2rem' }}>
-            {projects.map((project, index) => (
-              <div key={index} className="glass-panel project-card">
-                <div className="project-content">
-                  <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}>
-                    {project.icon}
-                  </div>
-                  <h3 className="project-title" style={{ marginBottom: '4px' }}>{project.title}</h3>
-                  {project.repo && (
-                    <div style={{ 
-                      fontSize: '0.825rem', 
-                      fontFamily: 'monospace', 
-                      color: 'var(--secondary)', 
-                      marginBottom: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      opacity: 0.9
-                    }}>
-                      <span>📁</span> {project.repo}
-                    </div>
-                  )}
-                  <p className="project-desc">{project.desc}</p>
-                  <div className="project-tags">
-                    {project.tags.map((tag, tIdx) => (
-                      <span key={tIdx} className="project-tag">{tag}</span>
-                    ))}
-                  </div>
-                  {project.link && (
-                    <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
-                      <a 
-                        href={project.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="project-link"
-                      >
-                        {lang === 'pt' ? 'Ver no GitHub' : 'View on GitHub'} <ExternalLink size={14} />
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact">
-        <div className="container grid-2 contact-grid">
-          <div>
-            <h2>{t.contactTitle}</h2>
-            <p style={{ marginBottom: '2.5rem', fontSize: '1.05rem' }}>{t.contactDesc}</p>
-            
-            <div className="contact-info-list">
-              <a href="https://wa.me/5527999395171" target="_blank" rel="noopener noreferrer" className="contact-item">
-                <div className="contact-icon-wrapper">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                  </svg>
-                </div>
-                <div className="contact-item-text">
-                  <h4>WhatsApp / Phone</h4>
-                  <p>+55 27 999395171</p>
-                </div>
-              </a>
-
-              <a href="mailto:eduardomdalmaso@gmail.com" className="contact-item">
-                <div className="contact-icon-wrapper">
-                  <Mail size={20} />
-                </div>
-                <div className="contact-item-text">
-                  <h4>Email</h4>
-                  <p>eduardomdalmaso@gmail.com</p>
-                </div>
-              </a>
-
-              <a href="https://linkedin.com/in/eduardo-m-dalmaso" target="_blank" rel="noopener noreferrer" className="contact-item">
-                <div className="contact-icon-wrapper">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                  </svg>
-                </div>
-                <div className="contact-item-text">
-                  <h4>LinkedIn</h4>
-                  <p>linkedin.com/in/eduardo-m-dalmaso</p>
-                </div>
-              </a>
-
-              <a href="https://github.com/eduardomdalmaso" target="_blank" rel="noopener noreferrer" className="contact-item">
-                <div className="contact-icon-wrapper">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                    <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
-                  </svg>
-                </div>
-                <div className="contact-item-text">
-                  <h4>GitHub</h4>
-                  <p>github.com/eduardomdalmaso</p>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <form onSubmit={handleSubmit} className="glass-panel contact-form">
-              {formSubmitted ? (
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '40px 0',
-                  textAlign: 'center',
-                  gap: '12px'
-                }}>
-                  <CheckCircle2 size={48} className="text-emerald-400" />
-                  <h3>{t.contactSuccess}</h3>
-                  <p>{t.contactSuccessSub}</p>
-                </div>
-              ) : (
-                <>
-                  <div className="form-group">
-                    <label htmlFor="name">{t.contactFormName}</label>
-                    <input 
-                      type="text" 
-                      id="name" 
-                      name="name" 
-                      value={formData.name} 
-                      onChange={handleInputChange} 
-                      className="form-input" 
-                      placeholder={t.contactFormNamePl} 
-                      required 
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="email">{t.contactFormEmail}</label>
-                    <input 
-                      type="email" 
-                      id="email" 
-                      name="email" 
-                      value={formData.email} 
-                      onChange={handleInputChange} 
-                      className="form-input" 
-                      placeholder={t.contactFormEmailPl} 
-                      required 
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="message">{t.contactFormMsg}</label>
-                    <textarea 
-                      id="message" 
-                      name="message" 
-                      rows={5} 
-                      value={formData.message} 
-                      onChange={handleInputChange} 
-                      className="form-textarea" 
-                      placeholder={t.contactFormMsgPl} 
-                      required
-                    ></textarea>
-                  </div>
-                  <button type="submit" className="btn-primary" style={{ marginTop: '8px', justifyContent: 'center' }}>
-                    {t.contactFormSubmit} <ArrowRight size={18} />
+      {/* Main Content Area */}
+      <main className="main-content">
+        
+        {/* Dynamic Pages switched via ActivePage State */}
+        {activePage === 'home' && (
+          <section className="page-enter" style={{ display: 'flex', alignItems: 'center', flexGrow: 1, padding: 0, border: 'none' }}>
+            <div className="grid-2" style={{ alignItems: 'center', width: '100%' }}>
+              <div>
+                <div className="hero-subtitle">{t.heroSubtitle}</div>
+                <h1>{t.heroTitle}</h1>
+                <p className="hero-desc">{t.heroDesc}</p>
+                <div className="hero-actions">
+                  <a href="https://wa.me/5527999395171" target="_blank" rel="noopener noreferrer" className="btn-primary">
+                    {t.heroCTA} <ArrowRight size={18} />
+                  </a>
+                  <button onClick={() => setActivePage('projects')} className="btn-secondary">
+                    {t.heroViewProjects}
                   </button>
-                </>
-              )}
-            </form>
-          </div>
-        </div>
-      </section>
+                </div>
+              </div>
+              <div className="hero-image-wrapper">
+                <div className="hero-image-border">
+                  <img src={profileImg} alt="Eduardo M. Dalmaso" className="hero-img" />
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="container">
-          <p>© {new Date().getFullYear()} Eduardo M. Dalmaso. {t.footerText}</p>
-          <p style={{ fontSize: '0.8rem', marginTop: '8px', opacity: 0.8 }}>{t.companyInfo}</p>
-        </div>
-      </footer>
-    </>
+        {activePage === 'about' && (
+          <section className="page-enter" style={{ padding: 0, border: 'none' }}>
+            <div className="grid-2" style={{ alignItems: 'center' }}>
+              <div>
+                <h2>{t.aboutTitle}</h2>
+                <p style={{ marginBottom: '1.5rem', fontSize: '1.05rem' }}>{t.aboutPara1}</p>
+                <p style={{ marginBottom: '1.5rem' }}>{t.aboutPara2}</p>
+                <p>{t.aboutPara3}</p>
+              </div>
+              <div>
+                <div className="about-stats">
+                  <div className="glass-panel stat-card">
+                    <div className="stat-number">
+                      <Cpu size={32} style={{ marginBottom: '8px', color: 'var(--secondary)' }} />
+                    </div>
+                    <div className="stat-label">{t.statEng}</div>
+                  </div>
+                  <div className="glass-panel stat-card">
+                    <div className="stat-number">
+                      <Sparkles size={32} style={{ marginBottom: '8px', color: 'var(--primary)' }} />
+                    </div>
+                    <div className="stat-label">{t.statVision}</div>
+                  </div>
+                  <div className="glass-panel stat-card">
+                    <div className="stat-number">
+                      <Code2 size={32} style={{ marginBottom: '8px', color: 'var(--accent)' }} />
+                    </div>
+                    <div className="stat-label">{t.statFullstack}</div>
+                  </div>
+                  <div className="glass-panel stat-card">
+                    <div className="stat-number">
+                      <Flame size={32} style={{ marginBottom: '8px', color: '#f97316' }} />
+                    </div>
+                    <div className="stat-label">{t.statOptimization}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activePage === 'skills' && (
+          <section className="page-enter" style={{ padding: 0, border: 'none' }}>
+            <h2>{t.skillsTitle}</h2>
+            <div className="grid-3" style={{ marginTop: '2rem' }}>
+              <div className="glass-panel skill-category-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                  <Code2 className="text-indigo-400" size={24} />
+                  <h3>{t.skillsLang}</h3>
+                </div>
+                <div className="skill-list">
+                  {skills.filter(s => s.category === "Linguagens").map((skill, index) => (
+                    <span key={index} className="skill-tag">{skill.name}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="glass-panel skill-category-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                  <Sparkles className="text-cyan-400" size={24} />
+                  <h3>{t.skillsAI}</h3>
+                </div>
+                <div className="skill-list">
+                  {skills.filter(s => s.category === "AI & Visão").map((skill, index) => (
+                    <span key={index} className="skill-tag">{skill.name}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="glass-panel skill-category-card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                  <Database className="text-purple-400" size={24} />
+                  <h3>{t.skillsSpec}</h3>
+                </div>
+                <div className="skill-list">
+                  {skills.filter(s => s.category === "Especialidades").map((skill, index) => (
+                    <span key={index} className="skill-tag">{skill.name}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activePage === 'projects' && (
+          <section className="page-enter" style={{ padding: 0, border: 'none' }}>
+            <h2>{t.projectsTitle}</h2>
+            <div className="grid-3" style={{ marginTop: '2rem' }}>
+              {projects.map((project, index) => (
+                <div key={index} className="glass-panel project-card">
+                  <div className="project-content">
+                    <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center' }}>
+                      {project.icon}
+                    </div>
+                    <h3 className="project-title" style={{ marginBottom: '4px' }}>{project.title}</h3>
+                    {project.repo && (
+                      <div style={{ 
+                        fontSize: '0.825rem', 
+                        fontFamily: 'monospace', 
+                        color: 'var(--secondary)', 
+                        marginBottom: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        opacity: 0.9
+                      }}>
+                        <span>📁</span> {project.repo}
+                      </div>
+                    )}
+                    <p className="project-desc">{project.desc}</p>
+                    <div className="project-tags">
+                      {project.tags.map((tag, tIdx) => (
+                        <span key={tIdx} className="project-tag">{tag}</span>
+                      ))}
+                    </div>
+                    {project.link && (
+                      <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+                        <a 
+                          href={project.link} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="project-link"
+                        >
+                          {lang === 'pt' ? 'Ver no GitHub' : 'View on GitHub'} <ExternalLink size={14} />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activePage === 'contact' && (
+          <section className="page-enter" style={{ padding: 0, border: 'none' }}>
+            <div className="grid-2 contact-grid">
+              <div>
+                <h2>{t.contactTitle}</h2>
+                <p style={{ marginBottom: '2.5rem', fontSize: '1.05rem' }}>{t.contactDesc}</p>
+                
+                <div className="contact-info-list">
+                  <a href="https://wa.me/5527999395171" target="_blank" rel="noopener noreferrer" className="contact-item">
+                    <div className="contact-icon-wrapper">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                      </svg>
+                    </div>
+                    <div className="contact-item-text">
+                      <h4>WhatsApp / Phone</h4>
+                      <p>+55 27 999395171</p>
+                    </div>
+                  </a>
+
+                  <a href="mailto:eduardomdalmaso@gmail.com" className="contact-item">
+                    <div className="contact-icon-wrapper">
+                      <Mail size={20} />
+                    </div>
+                    <div className="contact-item-text">
+                      <h4>Email</h4>
+                      <p>eduardomdalmaso@gmail.com</p>
+                    </div>
+                  </a>
+
+                  <a href="https://linkedin.com/in/eduardo-m-dalmaso" target="_blank" rel="noopener noreferrer" className="contact-item">
+                    <div className="contact-icon-wrapper">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                      </svg>
+                    </div>
+                    <div className="contact-item-text">
+                      <h4>LinkedIn</h4>
+                      <p>linkedin.com/in/eduardo-m-dalmaso</p>
+                    </div>
+                  </a>
+
+                  <a href="https://github.com/eduardomdalmaso" target="_blank" rel="noopener noreferrer" className="contact-item">
+                    <div className="contact-icon-wrapper">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                        <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+                      </svg>
+                    </div>
+                    <div className="contact-item-text">
+                      <h4>GitHub</h4>
+                      <p>github.com/eduardomdalmaso</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <form onSubmit={handleSubmit} className="glass-panel contact-form">
+                  {formSubmitted ? (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '40px 0',
+                      textAlign: 'center',
+                      gap: '12px'
+                    }}>
+                      <CheckCircle2 size={48} className="text-emerald-400" />
+                      <h3>{t.contactSuccess}</h3>
+                      <p>{t.contactSuccessSub}</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="form-group">
+                        <label htmlFor="name">{t.contactFormName}</label>
+                        <input 
+                          type="text" 
+                          id="name" 
+                          name="name" 
+                          value={formData.name} 
+                          onChange={handleInputChange} 
+                          className="form-input" 
+                          placeholder={t.contactFormNamePl} 
+                          required 
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="email">{t.contactFormEmail}</label>
+                        <input 
+                          type="email" 
+                          id="email" 
+                          name="email" 
+                          value={formData.email} 
+                          onChange={handleInputChange} 
+                          className="form-input" 
+                          placeholder={t.contactFormEmailPl} 
+                          required 
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="message">{t.contactFormMsg}</label>
+                        <textarea 
+                          id="message" 
+                          name="message" 
+                          rows={5} 
+                          value={formData.message} 
+                          onChange={handleInputChange} 
+                          className="form-textarea" 
+                          placeholder={t.contactFormMsgPl} 
+                          required
+                        ></textarea>
+                      </div>
+                      <button type="submit" className="btn-primary" style={{ marginTop: '8px', justifyContent: 'center' }}>
+                        {t.contactFormSubmit} <ArrowRight size={18} />
+                      </button>
+                    </>
+                  )}
+                </form>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Footer */}
+        <footer className="footer">
+          <div className="container">
+            <p>© {new Date().getFullYear()} Eduardo M. Dalmaso. {t.footerText}</p>
+            <p style={{ fontSize: '0.8rem', marginTop: '8px', opacity: 0.8 }}>{t.companyInfo}</p>
+          </div>
+        </footer>
+      </main>
+    </div>
   )
 }
 

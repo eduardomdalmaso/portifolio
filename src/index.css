@@ -1,4 +1,4 @@
-/* Modern & Premium CSS Design System */
+/* Modern & Premium CSS Design System with Sidebar Layout */
 
 :root {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
@@ -23,7 +23,7 @@
   --border: rgba(255, 255, 255, 0.08);
   --border-hover: rgba(255, 255, 255, 0.16);
   
-  --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --glow-shadow: 0 0 25px var(--primary-glow);
 }
 
@@ -59,18 +59,47 @@ body {
   background: var(--primary);
 }
 
-/* General Layout Elements */
+/* Layout Elements */
 #root {
   min-height: 100vh;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  background: rgba(4, 6, 11, 0.9);
+  border-right: 1px solid var(--border);
+  padding: 40px 24px;
   display: flex;
   flex-direction: column;
+  z-index: 90;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.main-content {
+  margin-left: 280px;
+  flex-grow: 1;
+  padding: 60px 48px;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
 }
 
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 0 24px;
 }
 
 /* Typography */
@@ -81,11 +110,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 3rem;
+  font-size: 3.5rem;
   letter-spacing: -0.03em;
   background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary) 70%, var(--secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
 }
 
 h2 {
@@ -187,19 +217,42 @@ p {
   gap: 24px;
 }
 
-/* Utility Animations */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-  100% { transform: translateY(0px); }
+/* Page Transitions */
+.page-enter {
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Responsiveness */
+/* Responsive Layout */
 @media (max-width: 968px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    bottom: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    padding: 110px 24px 40px;
+  }
+  
   h1 {
     font-size: 2.25rem;
   }
