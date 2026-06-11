@@ -14,7 +14,8 @@ import {
   Settings,
   Sparkles,
   Eye,
-  CheckCircle2
+  CheckCircle2,
+  ExternalLink
 } from 'lucide-react'
 import profileImg from './assets/profile.png'
 import './App.css'
@@ -146,31 +147,36 @@ function App() {
       title: t.proj1Title,
       desc: t.proj1Desc,
       tags: ["Python", "YOLO", "OpenCV", "Golang", "PyTorch"],
-      icon: <Terminal className="w-6 h-6 text-cyan-400" />
+      icon: <Terminal className="w-6 h-6 text-cyan-400" />,
+      link: "https://github.com/eduardomdalmaso/ALPR_model"
     },
     {
       title: t.proj2Title,
       desc: t.proj2Desc,
       tags: ["Golang", "PHP", "RTSP", "WebRTC", "Docker"],
-      icon: <Video className="w-6 h-6 text-indigo-400" />
+      icon: <Video className="w-6 h-6 text-indigo-400" />,
+      link: "https://github.com/eduardomdalmaso/fast_api-podman"
     },
     {
       title: t.proj3Title,
       desc: t.proj3Desc,
       tags: ["Python", "TensorFlow", "YOLOv8", "Deep Learning"],
-      icon: <Eye className="w-6 h-6 text-purple-400" />
+      icon: <Eye className="w-6 h-6 text-purple-400" />,
+      link: "https://github.com/eduardomdalmaso/face_D"
     },
     {
       title: t.proj4Title,
       desc: t.proj4Desc,
       tags: ["Golang", "PHP", "Python", "REST APIs", "Redis"],
-      icon: <Layers className="w-6 h-6 text-emerald-400" />
+      icon: <Layers className="w-6 h-6 text-emerald-400" />,
+      link: "https://github.com/eduardomdalmaso/emendas_DA"
     },
     {
       title: t.proj5Title,
       desc: t.proj5Desc,
       tags: ["PHP", "Golang", "SQL", "S3 Storage", "Sistemas Distribuídos"],
-      icon: <Settings className="w-6 h-6 text-amber-400" />
+      icon: <Settings className="w-6 h-6 text-amber-400" />,
+      link: "https://github.com/eduardomdalmaso/cartpole-ppo"
     }
   ]
 
@@ -431,6 +437,18 @@ function App() {
                       <span key={tIdx} className="project-tag">{tag}</span>
                     ))}
                   </div>
+                  {project.link && (
+                    <div style={{ marginTop: 'auto', paddingTop: '10px' }}>
+                      <a 
+                        href={project.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="project-link"
+                      >
+                        {lang === 'pt' ? 'Ver no GitHub' : 'View on GitHub'} <ExternalLink size={14} />
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
