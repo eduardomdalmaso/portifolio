@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import emailjs from '@emailjs/browser'
+import ReCAPTCHA from 'react-google-recaptcha'
 import { 
   Mail, 
   Cpu, 
@@ -255,7 +257,12 @@ function App() {
   const [activePage, setActivePage] = useState<'home' | 'about' | 'skills' | 'projects' | 'contact'>('home')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
+  const [isSending, setIsSending] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
+
+  const recaptchaRef = useRef<ReCAPTCHA>(null)
 
   const t = translations[lang]
 
@@ -266,11 +273,52 @@ function App() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setFormSubmitted(true)
-    setTimeout(() => {
-      setFormSubmitted(false)
+    setIsSending(true)
+    setErrorMessage('')
+
+    if (!recaptchaToken) {
+      setErrorMessage(lang === 'pt' ? 'Por favor, marque a caixa de verificação do Captcha.' : 'Please complete the Captcha verification.')
+      setIsSending(false)
+      return
+    }
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID'
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID'
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY'
+
+    emailjs.send(
+      serviceId,
+      templateId,
+      {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        time: new Date().toLocaleString(lang === 'pt' ? 'pt-BR' : 'en-US', {
+          dateStyle: 'short',
+          timeStyle: 'short',
+        }),
+        'g-recaptcha-response': recaptchaToken,
+      },
+      publicKey
+    )
+    .then((response) => {
+      console.log('SUCCESS!', response.status, response.text)
+      setFormSubmitted(true)
+      setIsSending(false)
       setFormData({ name: '', email: '', message: '' })
-    }, 4000)
+      setRecaptchaToken(null)
+      recaptchaRef.current?.reset()
+      setTimeout(() => {
+        setFormSubmitted(false)
+      }, 5000)
+    })
+    .catch((err) => {
+      console.error('FAILED...', err)
+      setErrorMessage(lang === 'pt' ? 'Erro ao enviar. Verifique se configurou as chaves corretas no arquivo .env.' : 'Error sending. Check if you configured the correct keys in the .env file.')
+      setIsSending(false)
+      setRecaptchaToken(null)
+      recaptchaRef.current?.reset()
+    })
   }
 
   const projects = [
@@ -722,8 +770,28 @@ function App() {
                           required
                         ></textarea>
                       </div>
-                      <button type="submit" className="btn-primary" style={{ marginTop: '8px', justifyContent: 'center' }}>
-                        {t.contactFormSubmit} <ArrowRight size={18} />
+                      <div className="form-group" style={{ margin: '15px 0', minHeight: '78px' }}>
+                        <ReCAPTCHA
+                          ref={recaptchaRef}
+                          sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY'}
+                          onChange={(token) => setRecaptchaToken(token)}
+                          onExpired={() => setRecaptchaToken(null)}
+                          theme="dark"
+                        />
+                      </div>
+                      {errorMessage && (
+                        <div style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '4px', fontFamily: 'monospace' }}>
+                          ⚠️ {errorMessage}
+                        </div>
+                      )}
+                      <button 
+                        type="submit" 
+                        className="btn-primary" 
+                        style={{ marginTop: '8px', justifyContent: 'center' }}
+                        disabled={isSending}
+                      >
+                        {isSending ? (lang === 'pt' ? 'Enviando...' : 'Sending...') : t.contactFormSubmit} 
+                        <ArrowRight size={18} />
                       </button>
                     </>
                   )}
