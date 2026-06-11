@@ -128,8 +128,8 @@ const translations = {
 function DetectionReveal() {
   const gridRef = useRef<HTMLDivElement>(null)
   
-  // Create 180 cells for the screen reveal
-  const cellCount = 200
+  // Create 400 cells for the 20x20 screen reveal grid
+  const cellCount = 400
 
   const handleCellMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = e.currentTarget
