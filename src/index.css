@@ -113,6 +113,7 @@ h1 {
   font-size: 3.5rem;
   letter-spacing: -0.03em;
   background: linear-gradient(135deg, var(--text-primary) 30%, var(--primary) 70%, var(--secondary) 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1.5rem;

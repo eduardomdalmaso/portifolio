@@ -14,6 +14,7 @@
 
 .sidebar-logo span {
   background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -87,7 +88,7 @@
   background: rgba(6, 182, 212, 0.05);
 }
 
-/* Detection Grid Tearing Overlay */
+/* Detection Spotlight Background Grid */
 .detection-bg-container {
   position: fixed;
   top: 0;
@@ -97,6 +98,141 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  background-color: var(--bg-darker);
+  opacity: var(--spotlight-opacity, 0);
+  clip-path: circle(180px at var(--mouse-x, 0px) var(--mouse-y, 0px));
+  -webkit-clip-path: circle(180px at var(--mouse-x, 0px) var(--mouse-y, 0px));
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.detection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  width: 100vw;
+  height: 100vh;
+  background-color: #020408;
+}
+
+.cam-feed {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.cam-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Make the security feed match the cybersecurity dark theme & keep text legible */
+  filter: brightness(0.35) contrast(1.25) saturate(0.8);
+}
+
+.cam-hud {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: monospace;
+  font-size: 0.75rem;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.cam-tag {
+  background: rgba(4, 6, 11, 0.85);
+  color: #94a3b8;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.cam-status {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  font-size: 0.7rem;
+}
+
+.cam-status.live {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+  animation: pulse-live 2s infinite;
+}
+
+.cam-status.warning {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  animation: pulse-warning 1s infinite alternate;
+}
+
+@keyframes pulse-live {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+@keyframes pulse-warning {
+  from { background-color: rgba(239, 68, 68, 0.15); }
+  to { background-color: rgba(239, 68, 68, 0.4); }
+}
+
+/* Red YOLO bounding box detections */
+.bbox {
+  position: absolute;
+  border: 2px solid #ef4444;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+/* YOLO style bounding box corners */
+.bbox::before, .bbox::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-color: #ffffff;
+  border-style: solid;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.bbox::before {
+  top: -2px;
+  left: -2px;
+  border-width: 2px 0 0 2px;
+}
+
+.bbox::after {
+  bottom: -2px;
+  right: -2px;
+  border-width: 0 2px 2px 0;
+}
+
+.bbox-label {
+  position: absolute;
+  top: -22px;
+  left: -2px;
+  background-color: #ef4444;
+  color: #ffffff;
+  font-size: 0.725rem;
+  font-family: monospace;
+  padding: 2px 6px;
+  border-radius: 2px 2px 0 0;
+  font-weight: bold;
+  white-space: nowrap;
+  box-shadow: 0 -2px 6px rgba(239, 68, 68, 0.2);
 }
 
 /* Foreground content container needs pointer events */
@@ -105,126 +241,41 @@
   z-index: 10;
 }
 
-/* Allow mouse interaction on the container but not on child texts */
-.reveal-interaction-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1;
-  pointer-events: auto;
-  cursor: crosshair;
-}
-
-.reveal-grid {
-  display: grid;
-  width: 100%;
-  height: 100%;
-  grid-template-columns: repeat(20, 1fr);
-  grid-template-rows: repeat(20, 1fr);
-  background: transparent;
-}
-
-.reveal-cell {
-  background: var(--bg-dark);
-  border: 1px solid rgba(255, 255, 255, 0.003);
-  transition: background-color 1.5s ease-out; /* Fades back slowly */
-}
-
-/* Hidden YOLO Feed Graphic (Underneath) */
-.detection-feed-graphic {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #020408;
-  background-image: 
-    radial-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px),
-    linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px);
-  background-size: 40px 40px, 80px 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Mock YOLO Detections */
-.mock-detection-overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-}
-
-/* Detection bounding boxes */
-.bbox {
-  position: absolute;
-  border: 2px solid;
-  border-radius: 4px;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-.bbox-label {
-  position: absolute;
-  top: -22px;
-  left: -2px;
-  color: white;
-  font-size: 0.7rem;
-  font-family: monospace;
-  padding: 2px 6px;
-  border-radius: 2px 2px 0 0;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-/* Colors for classes */
-.bbox.person {
-  border-color: #ef4444; /* Red */
-}
-.bbox.person .bbox-label {
-  background-color: #ef4444;
-}
-
-.bbox.car {
-  border-color: #3b82f6; /* Blue */
-}
-.bbox.car .bbox-label {
-  background-color: #3b82f6;
-}
-
-.bbox.robbery {
-  border-color: #f97316; /* Orange */
-  animation: pulse-border 1.5s infinite;
-}
-.bbox.robbery .bbox-label {
-  background-color: #f97316;
-}
-
-@keyframes pulse-border {
-  0% { border-color: #f97316; }
-  50% { border-color: #ef4444; }
-  100% { border-color: #f97316; }
-}
-
-/* Radar Scan line */
+/* Radar Scan line sweeping globally */
 .scan-line {
   position: absolute;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--secondary), transparent);
-  box-shadow: 0 0 10px var(--secondary);
+  background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.4), transparent);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
   top: 0;
-  animation: scan 6s linear infinite;
+  z-index: 2;
+  animation: scan 8s linear infinite;
+  pointer-events: none;
 }
 
 @keyframes scan {
   0% { top: 0%; }
   50% { top: 100%; }
   100% { top: 0%; }
+}
+
+/* Spotlight Glowing Neon Ring */
+.spotlight-ring {
+  position: fixed;
+  left: calc(var(--mouse-x, 0px) - 180px);
+  top: calc(var(--mouse-y, 0px) - 180px);
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  box-shadow: 
+    0 0 25px rgba(239, 68, 68, 0.25), 
+    inset 0 0 15px rgba(239, 68, 68, 0.15);
+  pointer-events: none;
+  z-index: 1;
+  opacity: var(--spotlight-opacity, 0);
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Sections & Cards */

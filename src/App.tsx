@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Mail, 
   Cpu, 
@@ -126,88 +126,127 @@ const translations = {
 
 // Interactive background grid reveal component
 function DetectionReveal() {
-  const gridRef = useRef<HTMLDivElement>(null)
-  
-  // Create 400 cells for the 20x20 screen reveal grid
-  const cellCount = 400
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [isHovered, setIsHovered] = useState(false)
 
-  const handleCellMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget
-    el.style.backgroundColor = 'transparent'
-    el.style.transition = 'none'
-  }
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY })
+    }
 
-  const handleCellMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = e.currentTarget
-    // Start fading back slowly
-    setTimeout(() => {
-      el.style.backgroundColor = 'var(--bg-dark)'
-      el.style.transition = 'background-color 2s ease-out'
-    }, 200)
-  }
+    const handleMouseEnter = () => {
+      setIsHovered(true)
+    }
+
+    const handleMouseLeave = () => {
+      setIsHovered(false)
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseenter', handleMouseEnter)
+    document.addEventListener('mouseleave', handleMouseLeave)
+
+    // Detect if mouse is already in window
+    const handleFirstMove = () => {
+      setIsHovered(true)
+      document.removeEventListener('mousemove', handleFirstMove)
+    }
+    document.addEventListener('mousemove', handleFirstMove)
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseenter', handleMouseEnter)
+      document.removeEventListener('mouseleave', handleMouseLeave)
+      document.removeEventListener('mousemove', handleFirstMove)
+    }
+  }, [])
 
   return (
-    <div className="detection-bg-container">
-      {/* Hidden YOLO Camera Graphic Underneath */}
-      <div className="detection-feed-graphic">
+    <>
+      <div 
+        className="detection-bg-container"
+        style={{
+          '--mouse-x': `${mousePos.x}px`,
+          '--mouse-y': `${mousePos.y}px`,
+          '--spotlight-opacity': isHovered ? 1 : 0,
+        } as React.CSSProperties}
+      >
+        <div className="detection-grid">
+          {/* CAM 01 - Cameras / General Surveillance */}
+          <div className="cam-feed">
+            <img src="/cameras.png" alt="General Surveillance" className="cam-img" />
+            <div className="cam-hud">
+              <span className="cam-tag">CAM_01: GENERAL_SURVEILLANCE</span>
+              <span className="cam-status live">LIVE</span>
+            </div>
+          </div>
+
+          {/* CAM 02 - Pedestrians */}
+          <div className="cam-feed">
+            <img src="/pedestrians.jpg" alt="Pedestrian Crossing" className="cam-img" />
+            <div className="cam-hud">
+              <span className="cam-tag">CAM_02: CROSSWALK_EAST</span>
+              <span className="cam-status live">LIVE</span>
+            </div>
+            <div className="bbox person" style={{ top: '35%', left: '25%', width: '15%', height: '50%' }}>
+              <span className="bbox-label">[Pedestrian: 96%]</span>
+            </div>
+            <div className="bbox person" style={{ top: '40%', left: '48%', width: '12%', height: '45%' }}>
+              <span className="bbox-label">[Pedestrian: 89%]</span>
+            </div>
+            <div className="bbox car" style={{ top: '55%', left: '70%', width: '22%', height: '35%' }}>
+              <span className="bbox-label">[Car: 99%]</span>
+            </div>
+          </div>
+
+          {/* CAM 03 - Robbery / Incident */}
+          <div className="cam-feed">
+            <img src="/robbery.jpg" alt="Incident Alert" className="cam-img" />
+            <div className="cam-hud">
+              <span className="cam-tag">CAM_03: SECURITY_LOBBY</span>
+              <span className="cam-status warning">ALERT: UNUSUAL ACTIVITY</span>
+            </div>
+            <div className="bbox threat" style={{ top: '25%', left: '40%', width: '35%', height: '60%' }}>
+              <span className="bbox-label">[Threat: 99% - INCIDENT]</span>
+            </div>
+            <div className="bbox person" style={{ top: '30%', left: '15%', width: '18%', height: '55%' }}>
+              <span className="bbox-label">[Person: 95%]</span>
+            </div>
+          </div>
+
+          {/* CAM 04 - Traffic */}
+          <div className="cam-feed">
+            <img src="/traffic.jpg" alt="Traffic Monitor" className="cam-img" />
+            <div className="cam-hud">
+              <span className="cam-tag">CAM_04: INTERSECTION_SOUTH</span>
+              <span className="cam-status live">LIVE</span>
+            </div>
+            <div className="bbox car" style={{ top: '42%', left: '20%', width: '22%', height: '32%' }}>
+              <span className="bbox-label">[Car: 95%]</span>
+            </div>
+            <div className="bbox car" style={{ top: '38%', left: '52%', width: '18%', height: '28%' }}>
+              <span className="bbox-label">[Car: 91%]</span>
+            </div>
+            <div className="bbox truck" style={{ top: '25%', left: '75%', width: '20%', height: '45%' }}>
+              <span className="bbox-label">[Truck: 88%]</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Scan line sweeping across the background */}
         <div className="scan-line"></div>
-        <div style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
-          fontFamily: 'monospace',
-          fontSize: '0.8rem',
-          color: '#ef4444',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <span style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: '#ef4444',
-            display: 'inline-block',
-            animation: 'pulse 1s infinite'
-          }}></span>
-          <span>LIVE DETECT | CORE_YOLOv10_RECV_04</span>
-        </div>
-
-        <div className="mock-detection-overlay">
-          {/* Bounding Box: Car */}
-          <div className="bbox car" style={{ top: '15%', left: '20%', width: '180px', height: '120px' }}>
-            <span className="bbox-label">[Car: 94%]</span>
-          </div>
-
-          {/* Bounding Box: Person */}
-          <div className="bbox person" style={{ top: '45%', left: '15%', width: '80px', height: '160px' }}>
-            <span className="bbox-label">[Person: 98%]</span>
-          </div>
-
-          {/* Bounding Box: Threat/Assalto */}
-          <div className="bbox robbery" style={{ top: '35%', left: '60%', width: '150px', height: '170px' }}>
-            <span className="bbox-label" style={{ backgroundColor: '#f97316' }}>[Threat: 99% - INCIDENT]</span>
-          </div>
-
-          {/* Bounding Box: License Plate */}
-          <div className="bbox car" style={{ top: '65%', left: '40%', width: '140px', height: '80px' }}>
-            <span className="bbox-label">[Plate: 91% - EMD2026]</span>
-          </div>
-        </div>
       </div>
 
-      {/* Grid cells overlaying the graphics */}
-      <div className="reveal-grid" ref={gridRef}>
-        {Array.from({ length: cellCount }).map((_, i) => (
-          <div
-            key={i}
-            className="reveal-cell"
-            onMouseEnter={handleCellMouseEnter}
-            onMouseLeave={handleCellMouseLeave}
-          />
-        ))}
-      </div>
-    </div>
+      {/* Spotlight Ring element to render overlay border and glow */}
+      <div 
+        className="spotlight-ring"
+        style={{
+          '--mouse-x': `${mousePos.x}px`,
+          '--mouse-y': `${mousePos.y}px`,
+          '--spotlight-opacity': isHovered ? 1 : 0,
+        } as React.CSSProperties}
+      />
+    </>
   )
 }
 
